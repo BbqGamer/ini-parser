@@ -1,6 +1,22 @@
-compile:
-	g++ src/main.c -Wall -Wextra -o bin/program
+SDIR=src
+ODIR=build
+CC=gcc
+CFLAGS = -Wall
+LIBS = 
 
-mem:
-	g++ src/main.c -o bin/test
-	valgrind --tool=memcheck --leak-check=yes ./bin/test data/example-4.5.ini uncomfortable-belated-decent-hospitable-percentage.wan-gullible-ashamed-outstanding-easy-going-reality -s
+_DEPS = utils.h
+DEPS = $(patsubst %,$(SDIR)/%,$(_DEPS))
+
+_OBJ = main.o
+OBJ = $(patsubst %,$(ODIR)/%,$(_OBJ))
+
+$(ODIR)/%.o: $(SDIR)/%.c $(DEPS)
+	$(CC) -c -o $@ $< $(CFLAGS)
+
+bin/program: $(OBJ)
+	$(CC) -o $@ $^ $(CFLAGS) $(LIBS)
+
+.PHONY: clean
+
+clean:
+	rm -f build/*.o bin/*

@@ -5,10 +5,10 @@ int main(int argc, char *argv[])
 
     if(argc < 3) {
         printf("Not enough arguments!");
-        return -1;
+        return ERROR_IN_ARGUMENTS;
     } else if (argc > 4) {
         printf("Too much arguments!");
-        return -1;
+        return ERROR_IN_ARGUMENTS;
     }
 
     int sCount = 0;
@@ -22,20 +22,24 @@ int main(int argc, char *argv[])
 
         if(!(s = strtok(argv[2], delimiter)) || !(k = strtok(NULL, delimiter))) {
             printf("Error in arguments");
-            return -1;
+            freeSections(dictionary, sCount);
+            return ERROR_IN_ARGUMENTS;
         }
         
         char* res;
         
         switch(findValue(dictionary, sCount, s, k, &res)) {
-            case -1:
+            case SECTION_NOT_FOUND:
                 printf("Failed to find section [%s]", s);
-                return -1;
-            case -2:
+                freeSections(dictionary, sCount);
+                return SECTION_NOT_FOUND;
+            case KEY_NOT_FOUND:
                 printf("Failed to find key \"%s\" in section [%s]", k, s);
-                return -1;
+                freeSections(dictionary, sCount);
+                return KEY_NOT_FOUND;
             default:
-                printf("RESULT: %s", res);
+                printf("RESULT: %s\n", res);
+                freeSections(dictionary, sCount);
                 return 0;
         }
 
@@ -47,7 +51,8 @@ int main(int argc, char *argv[])
 
         if(!(arg1 = strtok(argv[3], space)) || !(op = strtok(NULL, space)) || !(arg2 = strtok(NULL, space))) {
             printf("Error in arguments!\n");
-            return -1;
+            freeSections(dictionary, sCount);
+            return ERROR_IN_ARGUMENTS;
         }
         char o = op[0];
 
@@ -57,29 +62,35 @@ int main(int argc, char *argv[])
         char* val2;
         if(!(s = strtok(arg1, delimiter)) || !(k = strtok(NULL, delimiter))) {
             printf("Error in arguments");
-            return -1;
+            freeSections(dictionary, sCount);
+            return ERROR_IN_ARGUMENTS;
         }
         switch(findValue(dictionary, sCount, s, k, &val1)) {
-            case -1:
+            case SECTION_NOT_FOUND:
                 printf("Failed to find section [%s]", s);
-                return -1;
-            case -2:
+                freeSections(dictionary, sCount);
+                return SECTION_NOT_FOUND;
+            case KEY_NOT_FOUND:
                 printf("Failed to find key \"%s\" in section [%s]", k, s);
-                return -1;
+                freeSections(dictionary, sCount);
+                return KEY_NOT_FOUND;
             default:
                 break;
         }
         if(!(s = strtok(arg2, delimiter)) || !(k = strtok(NULL, delimiter))) {
             printf("Error in arguments");
-            return -1;
+            freeSections(dictionary, sCount);
+            return ERROR_IN_ARGUMENTS;
         }
         switch(findValue(dictionary, sCount, s, k, &val2)) {
-            case -1:
+            case SECTION_NOT_FOUND:
                 printf("Failed to find section [%s]", s);
-                return -1;
-            case -2:
+                freeSections(dictionary, sCount);
+                return SECTION_NOT_FOUND;
+            case KEY_NOT_FOUND:
                 printf("Failed to find key \"%s\" in section [%s]", k, s);
-                return -1;
+                freeSections(dictionary, sCount);
+                return KEY_NOT_FOUND;
             default:
                 break;
         }
@@ -105,7 +116,12 @@ int main(int argc, char *argv[])
                 printf("%d\n", a*b);
                 break;
             case '/':
-                printf("%f\n", float(a)/b);
+                float A = a;
+                if(b !=0) {
+                    printf("%f\n", A/b);
+                } else {
+                    printf("Cannot divide by 0");
+                }
                 break;
             default:
                 printf("Unsupported operator for type INT %c\n", o);
@@ -113,8 +129,8 @@ int main(int argc, char *argv[])
             }
         } else if(!isNumber(val1) && !isNumber(val2)) {
             if(o == '+') {
-                strcat(val1, val2);
-                printf("%s\n", val1);
+                printf("%s", val1);
+                printf("%s\n", val2);
             } else {
                 printf("Unsupported operator for type STRING - %c\n", o);
             }

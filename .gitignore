@@ -1,1 +1,4 @@
 .vscode/
+build/*
+!.gitkeep
+tests.sh

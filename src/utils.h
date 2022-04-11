@@ -1,7 +1,11 @@
 #include <stdlib.h>
 #include <stdio.h>
-#include <cstring>
+#include <string.h>
 #include <ctype.h>
+
+#define SECTION_NOT_FOUND -1
+#define KEY_NOT_FOUND -2
+#define ERROR_IN_ARGUMENTS -3
 
 struct section 
 {
@@ -170,10 +174,10 @@ int findValue(struct section* sections, int c, const char* s, const char* k, cha
                     return 0;
                 }
             }
-            return -2;
+            return KEY_NOT_FOUND;
         }
     }
-    return -1;
+    return SECTION_NOT_FOUND;
 }
 
 int isNumber(char* str) {
